@@ -1,8 +1,8 @@
 package core;
 
-import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
 
+import java.util.Collection;
 public class Workout {
 
     private int workoutID;
@@ -16,7 +16,43 @@ public class Workout {
     private String note;
 
     private Collection<Exercise> workoutExercise;
+    /**
+     * Constructor used by DatabaseController
+     * @param workoutID
+     * @param timestamp
+     * @param duration
+     * @param form
+     * @param performance
+     * @param note
+     */
+    public Workout (
+            int workoutID, Date timestamp,
+            int duration, int form,
+            int performance, String note
+            ) {
+        this.workoutID = workoutID;
+        this.timestamp = timestamp;
+        this.duration = duration;
+        this.form = form;
+        this.performance = performance;
+        this.note = note;
+    }
 
+    /**
+     * Constructor used to make non-persisted java-objects
+     * @param timestamp
+     * @param duration
+     * @param form
+     * @param performance
+     * @param note
+     */
+    public Workout (Date timestamp, int duration, int form, int performance, String note) {
+            this.timestamp = timestamp;
+            this.duration = duration;
+            this.form = form;
+            this.performance = performance;
+            this.note = note;
+        }
     public Workout(int workoutID, Date timestamp, int duration, int form, int performance, String note, Collection<Exercise> workoutExercises){
         this.workoutID = workoutID;
         this.timestamp = timestamp;
