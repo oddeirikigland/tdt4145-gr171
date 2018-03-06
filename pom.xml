@@ -40,11 +40,6 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.21.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.stripe</groupId>
-            <artifactId>stripe-java</artifactId>
-            <version>5.33.2</version>
-        </dependency>
     </dependencies>
 
     <build>
