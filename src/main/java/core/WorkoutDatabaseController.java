@@ -15,7 +15,7 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
     public int create(Object object) {
     	Workout w1 = (Workout) isWorkout(object);
         String sql = "INSERT INTO workout "
-                    + "(timestamp, duration, form, performance, note) "
+                    + "(timestamp, duration, form, performance, notes) "
                     + "VALUES (?, ?, ?, ?, ?)";
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
@@ -50,7 +50,7 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 	public Workout retrieve(int id) {
         String sql = "SELECT * "
         			+ "FROM workout "
-        			+ "WHERE workoutID=?";
+        			+ "WHERE workout_id=?";
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(sql);
@@ -60,12 +60,12 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
             Workout w1;
             if (rs.next()) {
             	w1 = new Workout(
-            			rs.getInt("workoutID"),
+            			rs.getInt("workout_id"),
             			rs.getDate("timestamp"),
             			rs.getInt("duration"),
             			rs.getInt("form"),
             			rs.getInt("performance"),
-            			rs.getString("note")
+            			rs.getString("notes")
             		);
             	connection.close();
             	return w1;
@@ -81,8 +81,8 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 	public void update(Object object) {
 		Workout w1 = (Workout) isWorkout(object);
 		String sql = "UPDATE workout "
-        			+ "SET timestamp=?, duration=?, form=?, performance=?, note=? "
-        			+ "WHERE workoutID=?";
+        			+ "SET timestamp=?, duration=?, form=?, performance=?, notes=? "
+        			+ "WHERE workout_id=?";
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(sql);
@@ -102,7 +102,7 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 
 	public void delete(int id) {
 		String sql = "DELETE FROM workout "
-					+ "WHERE workoutID=?";
+					+ "WHERE workout_id=?";
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(sql);

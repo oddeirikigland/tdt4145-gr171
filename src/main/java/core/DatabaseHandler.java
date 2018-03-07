@@ -8,13 +8,28 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class CreateDatabase {
+public class DatabaseHandler {
 
-    public static void createNewDatabase() throws IOException {
+	/**
+	 *	Wipes or creates new database based on flag 
+	 * @param flag	 		true wipes database, false creates new database
+	 * @throws IOException
+	 */
+    public static void database(boolean flag) throws IOException {
 		
         String url = "jdbc:sqlite:database.db";
     	
-        BufferedReader in = new BufferedReader(new FileReader("src/main/resources/database.sql"));
+        String create = "src/main/resources/database.sql";
+        String wipe = "src/main/resources/wipe.sql";
+        String path;
+
+        if (flag) {
+        	path = wipe;
+        } else {
+        	path = create;
+        }
+
+        BufferedReader in = new BufferedReader(new FileReader(path));
         String str;
         StringBuffer sql = new StringBuffer();
         while ((str = in.readLine()) != null) {
@@ -35,7 +50,7 @@ public class CreateDatabase {
             }
  
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        	System.out.println(e.getMessage());
         }
     }
  
@@ -45,7 +60,7 @@ public class CreateDatabase {
      */
     public static void main(String[] args) {
     	try {
-    		createNewDatabase();
+    		database(false);
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
