@@ -16,7 +16,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
                     + "VALUES(?, ?, ?)";
 
         try {
-            int id = -1;
+            int i = -1;
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, exercise.getExerciseID());
@@ -28,7 +28,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
                 // row. Assumes the row only has one key
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    id = Math.toIntExact(generatedKeys.getLong(1));
+                    i = Math.toIntExact(generatedKeys.getLong(1));
                 }
 
             }
@@ -37,12 +37,12 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
             }
 
             statement = connection.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
-            statement.setInt(1, id);
+            statement.setInt(1, i);
             statement.setString(2, exercise.getName());
             statement.setString(3, exercise.getDescription());
             statement.executeUpdate();
             connection.close();
-            return id;
+            return i;
         }
         catch (SQLException e) {
             e.printStackTrace();
