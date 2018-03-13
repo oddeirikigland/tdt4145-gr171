@@ -47,6 +47,23 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
        return -1;
     }
 
+   public ResultSet getNWorkouts(int n) { 
+	   String sql = "SELECT * "
+			   	  + "FROM workout LIMIT ?";
+	   try {
+		   Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+		   statement = connection.prepareStatement(sql);
+		   statement.setInt(1, n);
+		   ResultSet rs = statement.executeQuery();
+		   connection.close();
+		   return rs;
+		   
+	   } catch (SQLException e) {
+		   e.printStackTrace();
+	   }
+	   return null;
+   }
+    
 	public Workout retrieve(int id) {
         String sql = "SELECT * "
         			+ "FROM workout "
