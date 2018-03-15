@@ -679,7 +679,6 @@ public class DBTablePrinter {
             case Types.TIME_WITH_TIMEZONE:
             case Types.TIMESTAMP:
             case Types.TIMESTAMP_WITH_TIMEZONE:
-            	System.out.println(type);
                 return CATEGORY_DATETIME;
 
             case Types.BOOLEAN:
