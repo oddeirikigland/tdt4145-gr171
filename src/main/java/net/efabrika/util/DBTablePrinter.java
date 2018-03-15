@@ -494,7 +494,7 @@ public class DBTablePrinter {
                         	int secs = remainder;
 
                         	Formatter format = new Formatter();
-                        	value = format.format("%dh, %dm, %ds", hours, mins, secs).toString();
+                        	value = format.format("%2dh, %2dm, %2ds", hours, mins, secs).toString();
                         	format.close();
                         }
                     }
