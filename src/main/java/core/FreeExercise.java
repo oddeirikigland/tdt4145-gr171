@@ -8,6 +8,11 @@ public class FreeExercise extends Exercise {
         this.description = description;
     }
 
+    public FreeExercise(String name, String description) {
+        super(name);
+        this.description = description;
+    }
+
     public String getDescription() {
         return description;
     }

@@ -12,6 +12,12 @@ public class MachineExercise extends Exercise {
         this.sets = sets;
     }
 
+    public MachineExercise(String name, int kilograms, int sets) {
+        super(name);
+        this.kilograms = kilograms;
+        this.sets = sets;
+    }
+
     public int getKilograms() {
         return kilograms;
     }

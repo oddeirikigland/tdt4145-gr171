@@ -11,6 +11,10 @@ public class Machine {
         this.name = name;
     }
 
+    public Machine(String name) {
+        this.name = name;
+    }
+
     public int getMachineID() {
         return machineID;
     }

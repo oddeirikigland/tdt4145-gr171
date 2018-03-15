@@ -15,6 +15,11 @@ public class ExerciseGroup {
         this.exercises = new ArrayList<Exercise>();
     }
 
+    public ExerciseGroup(String name) {
+        this.name = name;
+        this.exercises = new ArrayList<Exercise>();
+    }
+
     public int getExerciseGroupID() {
         return exerciseGroupID;
     }

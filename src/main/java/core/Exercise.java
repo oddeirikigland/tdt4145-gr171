@@ -14,6 +14,11 @@ public abstract class Exercise {
         this.groups = new ArrayList<ExerciseGroup>();
     }
 
+    public Exercise(String name) {
+        this.name = name;
+        this.groups = new ArrayList<ExerciseGroup>();
+    }
+
     public int getExerciseID() {
         return exerciseID;
     }
