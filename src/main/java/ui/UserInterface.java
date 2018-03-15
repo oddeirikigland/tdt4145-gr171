@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -95,6 +98,33 @@ public class UserInterface {
 	}
 
 	/**
+	 * Registers Workout with associated data
+	 */
+	private static void registerWorkout() {
+		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("When was this exercise? (format: yyyy-mm-dd hh:mm");
+
+		String timestamp = "";
+		while (timestamp.equals("")) {
+			try {
+				timestamp = keyboard.nextLine();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm");
+				Date convertedCurrentDate = sdf.parse(timestamp);
+			}
+			catch (ParseException e) {
+				System.out.println("Wrong format. Please enter as yyyy-mm-dd hh:mm");
+				timestamp = "";
+			}
+		}
+
+
+
+
+	}
+
+	/**
 	 * Get information of workout based on what machine it was performed on
 	 */
 	private static void viewWorkoutOnMachine() {
@@ -119,13 +149,6 @@ public class UserInterface {
 		
 	}
 
-	/**
-	 * Registers Workout with associated data
-	 */
-	private static void registerWorkout() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/**
 	 * Registers Machine with associated data
