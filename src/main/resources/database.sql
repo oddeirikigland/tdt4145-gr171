@@ -37,7 +37,7 @@ create table if not exists machine_exercise (
 
 create table if not exists free_exercise (
     exercise_id     integer primary key,
-    name            varchar(31) not null,
+    description            varchar(31) not null,
     foreign key (exercise_id) references exercise(exercise_id)
                             on update cascade
                             on delete cascade
