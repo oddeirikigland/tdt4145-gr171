@@ -2,7 +2,7 @@ package core;
 
 import java.sql.*;
 
-public class FreeExerciseDatabaseController {
+public class FreeExerciseDatabaseController implements DatabaseCRUD {
 
     PreparedStatement statement;
 
@@ -31,7 +31,7 @@ public class FreeExerciseDatabaseController {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            /* For MachineExercise */
+            /* For FreeExercise */
             sql = "INSERT INTO free_exercise" +
                     "(exercise_id, description)" +
                     "VALUES (?, ?)";
@@ -39,7 +39,7 @@ public class FreeExerciseDatabaseController {
             statement.setInt(1, id);
             statement.setString(2, fe1.getDescription());
             connection.close();
-            return id; // returns ID for both exercise and machine_exercise table
+            return id; // returns ID for both exercise and free_exercise table
         } catch (SQLException e) {
             e.printStackTrace();
         }
