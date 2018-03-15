@@ -25,6 +25,7 @@ public class Machine {
      */
     public Machine(String name) {
         this.name = name;
+        //this.description = description;
     }
 
     /**
