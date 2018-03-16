@@ -8,6 +8,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import core.DatabaseHandler;
+import core.ExerciseGroup;
+import core.ExerciseGroupDatabaseController;
 import core.WorkoutDatabaseController;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
@@ -58,13 +60,40 @@ public class UserInterface {
 			case 3: registerWorkout(); break;
 			case 4: viewWorkouts(); break;
 			case 5: viewResultLog(); break;
-			case 6: registerExercise(); break;
+			case 6: registerExerciseGroup(); break;
 			case 7: viewWorkoutOnMachine(); break;
 			case 8: quit = true; break;
 			default: System.out.println("Number must be 1-8"); continue;
 			}
 		}
 		keyboard.close();
+	}
+
+	/**
+	 * Registers ExerciseGroup
+	 */
+	private static void registerExerciseGroup() {
+		Scanner keyboard = new Scanner(System.in);
+		
+		System.out.println("-----REGISTER EXERCISE GROUP----");
+		System.out.println("Exercise group name: ");
+		String name = null;
+
+		try {
+			name = keyboard.nextLine();
+		} catch (InputMismatchException e) {
+			System.err.println("Input must be text!");
+		}
+		
+		ExerciseGroup eg = new ExerciseGroup(name);
+		ExerciseGroupDatabaseController egdc = new ExerciseGroupDatabaseController();
+		eg = new ExerciseGroup(egdc.create(eg), eg.getName());
+		if (eg.getExerciseGroupID() != -1) {
+			System.out.println("Successfully created exercise group " + name);
+		} else {
+			System.err.println("Something went wrong...");
+		}
+		System.out.println();
 	}
 
 	/**
@@ -84,11 +113,10 @@ public class UserInterface {
 			System.err.println("Input must be a number!");
 		} 
 
-        Connection conn;
+		Connection conn;
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
 			DBTablePrinter.printTable(conn, "workout", input, 120);
-			DBTablePrinter.printResultSet(wdc.getNWorkouts(input));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
