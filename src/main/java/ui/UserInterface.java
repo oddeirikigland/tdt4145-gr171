@@ -84,11 +84,10 @@ public class UserInterface {
 			System.err.println("Input must be a number!");
 		} 
 
-        Connection conn;
+		Connection conn;
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
 			DBTablePrinter.printTable(conn, "workout", input, 120);
-			DBTablePrinter.printResultSet(wdc.getNWorkouts(input));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
