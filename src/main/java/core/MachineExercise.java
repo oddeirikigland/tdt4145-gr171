@@ -6,13 +6,13 @@ public class MachineExercise extends Exercise {
     private int sets;
     private Machine machine;
 
-    public MachineExercise(int exerciseID, String name, int kilograms, int sets) {
+    public MachineExercise(int exerciseID, String name, int kilograms, int sets, Machine machine) {
         super(exerciseID, name);
         this.kilograms = kilograms;
         this.sets = sets;
     }
 
-    public MachineExercise(String name, int kilograms, int sets) {
+    public MachineExercise(String name, int kilograms, int sets, Machine machine) {
         super(name);
         this.kilograms = kilograms;
         this.sets = sets;
