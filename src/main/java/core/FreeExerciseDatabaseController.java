@@ -12,15 +12,14 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
                 + "(name)"
                 + "VALUES(?)";
         String subSql = "INSERT INTO free_exercise "
-                    + "(exercise_id, name, description) "
+                    + "(exercise_id, description) "
                     + "VALUES(?, ?, ?)";
 
         try {
             int i = -1;
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
-            statement.setInt(1, exercise.getExerciseID());
-            statement.setString(2, exercise.getName());
+            statement.setString(1, exercise.getName());
             statement.executeUpdate();
 
             try {
@@ -38,8 +37,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
 
             statement = connection.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, i);
-            statement.setString(2, exercise.getName());
-            statement.setString(3, exercise.getDescription());
+            statement.setString(2, exercise.getDescription());
             statement.executeUpdate();
             connection.close();
             return i;
