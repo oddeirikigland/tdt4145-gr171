@@ -30,11 +30,13 @@ public class MachineExercise extends Exercise {
      * @param name
      * @param kilograms
      * @param sets
+     * @param m
      */
-    public MachineExercise(String name, int kilograms, int sets) {
+    public MachineExercise(String name, int kilograms, int sets, Machine machine) {
         super(name);
         this.kilograms = kilograms;
         this.sets = sets;
+        this.machine = machine;
     }
 
     /**
