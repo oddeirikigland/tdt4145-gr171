@@ -16,81 +16,75 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
                     + "VALUES(?, ?, ?)";
 
         try {
-            int i = -1;
+            int id = -1;
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setString(1, exercise.getName());
+
             statement.executeUpdate();
 
             try {
-                // Retrieves all generated keys, and returns the key of the newly inserted
-                // row. Assumes the row only has one key
+                // Retrieves all generated keys and returns the ID obtained by java object
+                // which is inserted into the database
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    i = Math.toIntExact(generatedKeys.getLong(1));
+                    id = Math.toIntExact(generatedKeys.getLong(1));
+                    connection.close();
+                    // return i;
                 }
-
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
 
             statement = connection.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
-            statement.setInt(1, i);
+            statement.setInt(1, id);
             statement.setString(2, exercise.getDescription());
             statement.executeUpdate();
+
             connection.close();
-            return i;
-        }
-        catch (SQLException e) {
+            return id; // returns ID for both exercise and free_exercise table
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
     }
 
-    public Object retrieve(int exercise_id) {
-        String sql = "SELECT * "
-                    + "FROM free_exercise NATURAL JOIN exercise "
-                    + "WHERE exercise_ID = ?";
+    public Object retrieve(int id) {
+        String sql = "SELECT *" +
+                "FROM exercise NATURAL JOIN free_exercise" +
+                "WHERE exercise_id=?";
+
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, exercise_id);
+            statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
 
-            FreeExercise e1;
+            FreeExercise fe1;
             if (rs.next()) {
-                e1 = new FreeExercise(
+                fe1 = new FreeExercise(
                         rs.getInt("exercise_id"),
                         rs.getString("name"),
                         rs.getString("description")
                 );
                 connection.close();
-                return e1;
+                return fe1;
             }
-        }
-        catch (SQLException e) {
+            connection.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    /**
-     * Not needed in this projectt
-     * @param object to be persisted
-     */
     @Deprecated
     public void update(Object object) {
-        return;
+
     }
 
-    /**
-     * Not needed in this project
-     * @param id of object to delete
-     */
     @Deprecated
     public void delete(int id) {
-        return;
+
     }
 
 
