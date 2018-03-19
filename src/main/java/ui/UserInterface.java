@@ -14,6 +14,7 @@ import core.ExerciseGroup;
 import core.ExerciseGroupDatabaseController;
 import core.FreeExercise;
 import core.FreeExerciseDatabaseController;
+import core.IncludesDatabaseController;
 import core.Machine;
 import core.MachineDatabaseController;
 import core.MachineExercise;
@@ -70,11 +71,23 @@ public class UserInterface {
 			case 5: viewResultLog(); break;
 			case 6: registerExerciseGroup(); break;
 			case 7: viewWorkoutOnMachine(); break;
+			case 9: viewMachineExercises(); break;
 			case 8: quit = true; break;
 			default: System.out.println("Number must be 1-8"); continue;
 			}
 		}
 		keyboard.close();
+	}
+
+	private static void viewMachineExercises() {
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "machine_exercise");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -183,17 +196,21 @@ public class UserInterface {
 
 	private static void registerExercise(int id) {
 		Scanner keyboard = new Scanner(System.in);
+		IncludesDatabaseController idc = new IncludesDatabaseController();
+
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
 		
 		try {
 			input = keyboard.nextInt();
+			keyboard.nextLine();
 		} catch (InputMismatchException e) {
 			System.err.println("Input must be a number!");
 		}
 
 		System.out.println("Name of exercise: ");
-		String name = keyboard.nextLine();	
+		String name;
+		name = keyboard.nextLine();	
 
 		if (input == 1) {
 			// register FreeExercise
@@ -202,8 +219,11 @@ public class UserInterface {
 			
 			FreeExerciseDatabaseController fedc = new FreeExerciseDatabaseController();
 			FreeExercise freeExercise = new FreeExercise(name, desc);
-			// TODO: add functionality of GroupExercise
 			fedc.create(freeExercise);
+			
+			if (id != 0) {
+				idc.create(id, freeExercise);
+			}
 		}
 		else if (input == 2) {
 			// register MachineExercise
@@ -238,8 +258,11 @@ public class UserInterface {
 					sets,
 					machine
 				);
-			// TODO: Add functionality of GroupExercise
 			medc.create(exercise);
+			
+			if (id != 0) {
+				idc.create(id, exercise);
+			}
 		}
 	}
 

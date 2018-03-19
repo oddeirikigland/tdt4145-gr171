@@ -9,11 +9,11 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
     public int create(Object object) {
         FreeExercise exercise = (FreeExercise) isFreeExercise(object);
         String superSql = "INSERT INTO exercise "
-                + "(name)"
+                + "(name) "
                 + "VALUES(?)";
         String subSql = "INSERT INTO free_exercise "
                     + "(exercise_id, description) "
-                    + "VALUES(?, ?, ?)";
+                    + "VALUES(?, ?)";
 
         try {
             int id = -1;
@@ -36,7 +36,8 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
                 e.printStackTrace();
             }
 
-            statement = connection.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+            statement = conn.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, id);
             statement.setString(2, exercise.getDescription());
             statement.executeUpdate();
@@ -51,7 +52,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
 
     public Object retrieve(int id) {
         String sql = "SELECT *" +
-                "FROM exercise NATURAL JOIN free_exercise" +
+                "FROM exercise NATURAL JOIN free_exercise " +
                 "WHERE exercise_id=?";
 
         try {

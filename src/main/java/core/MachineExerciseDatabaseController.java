@@ -23,8 +23,7 @@ public class MachineExerciseDatabaseController {
 			int i = -1;
 			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 			statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
-			statement.setInt(1, exercise.getExerciseID());
-			statement.setString(2, exercise.getName());
+			statement.setString(1, exercise.getName());
 			statement.executeUpdate();
 
 			try {
@@ -40,7 +39,8 @@ public class MachineExerciseDatabaseController {
 				e.printStackTrace();
 			}
 
-			statement = connection.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = conn.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
 			statement.setInt(1, i);
 			statement.setInt(2, exercise.getSets());
 			statement.setInt(3, exercise.getKilograms());
