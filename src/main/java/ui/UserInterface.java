@@ -297,19 +297,18 @@ public class UserInterface {
 
 		System.out.println("What's the name of the machine\n");
 		String name = "";
-		//String description = "";
+		String description = "";
 
 		try {
 			name = keyboard.nextLine();
-            //System.out.println("Describe the machine");
-            //description = keyboard.nextLine();
+            System.out.println("Describe the machine");
+            description = keyboard.nextLine();
 		} catch (InputMismatchException e) {
 			System.err.println("Input must be text!");
 		}
-		machine = new Machine(name); //,description);
+		machine = new Machine(name, description);
 
         machineDatabaseController.create(machine);
-
-
+		System.out.println("Machine registered");
 	}
 }

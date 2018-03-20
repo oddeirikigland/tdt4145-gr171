@@ -14,7 +14,8 @@ create table if not exists exercise_group (
 
 create table if not exists  machine (
     machine_id      integer primary key autoincrement,
-    name            varchar(31) not null
+    name            varchar(31) not null,
+    description		varchar(255)
 );
 
 create table if not exists exercise (
