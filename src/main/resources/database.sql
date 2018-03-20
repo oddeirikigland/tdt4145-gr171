@@ -1,6 +1,6 @@
 create table if not exists workout (
     workout_id      integer primary key autoincrement,
-    timestamp       datetime not null,
+    timestamp       date not null,
     duration        integer not null,
     form            integer not null,
     performance     integer not null,
