@@ -50,7 +50,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
         return -1;
     }
 
-    public Object retrieve(int id) {
+    public FreeExercise retrieve(int id) {
         String sql = "SELECT *" +
                 "FROM exercise NATURAL JOIN free_exercise " +
                 "WHERE exercise_id=?";

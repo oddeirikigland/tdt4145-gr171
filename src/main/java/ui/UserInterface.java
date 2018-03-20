@@ -10,25 +10,14 @@ import java.util.Scanner;
 
 import javax.sound.midi.Soundbank;
 
-import core.DatabaseHandler;
-import core.ExerciseGroup;
-import core.ExerciseGroupDatabaseController;
-import core.FreeExercise;
-import core.FreeExerciseDatabaseController;
-import core.IncludesDatabaseController;
-import core.Machine;
-import core.MachineDatabaseController;
-import core.MachineExercise;
-import core.MachineExerciseDatabaseController;
-import core.WorkoutDatabaseController;
+import core.*;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
 
 public class UserInterface {
 	
 	public static void main(String[] args) {
-		//startInterface();
-		printExercises();
+		startInterface();
 	}
 	
 	/**
@@ -153,7 +142,8 @@ public class UserInterface {
 		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
 		Scanner keyboard = new Scanner(System.in);
 
-		System.out.println("When was this exercise? (format: yyyy-mm-dd hh:mm");
+		System.out.println("----REGISTER WORKOUT----");
+		System.out.println("When was this workout? (format: yyyy-mm-dd hh:mm");
 
 		String timestamp = "";
 		Date convertedCurrentDate = null;
@@ -178,10 +168,13 @@ public class UserInterface {
 				duration = keyboard.nextInt();
 			}
 			catch (InputMismatchException e) {
+				keyboard.nextLine();
 				System.out.println("Wrong format. Must be a number. Please enter again.");
 				duration = -1;
 			}
 		}
+		// The system asks for duration in minutes, but expects seconds
+		duration = duration * 60;
 
 		System.out.println("What was your form? (format: nn [number 1-10])");
 
@@ -190,11 +183,14 @@ public class UserInterface {
 			try {
 				form = keyboard.nextInt();
 				if (form < 1 || form > 10) {
+					// Clear the scanner
 					System.out.println("Invalid number. Must be between 1 and 10");
 					form = -1;
 				}
 			}
 			catch (InputMismatchException e) {
+				// Clear the Scanner
+				keyboard.nextLine();
 				System.out.println("Wrong format. Must be a number. Please enter again.");
 				form = -1;
 			}
@@ -212,6 +208,8 @@ public class UserInterface {
 				}
 			}
 			catch (InputMismatchException e ) {
+				// Clear the Scanner
+				keyboard.nextLine();
 				System.out.println("Wrong format. Must be a number. Please enter again");
 				performance = -1;
 			}
@@ -240,33 +238,87 @@ public class UserInterface {
 
 		System.out.println("Select exercises that were a part of this workout. [1, 2, ...]. Enter 0 to end.");
 
-		int input = -1;
-		while (input != 0) {
-			while (input == -1) {
+		int exerciseID = -1;
+		while (exerciseID != 0) {
+			while (exerciseID == -1) {
 				try {
-					input = keyboard.nextInt();
+					exerciseID = keyboard.nextInt();
+					if (exerciseID == 0) {
+						break;
+					}
 				} catch (InputMismatchException e) {
+					// Clear the Scanner
+					keyboard.nextLine();
 					System.out.println("Wrong format. Must be a number. Please enter again.");
-					input = -1;
+					exerciseID = -1;
 				}
-
 			}
 			try {
-				addExerciseToWorkout(workoutID, input);
+				addExerciseToWorkout(newWorkout, exerciseID);
 			}
 			catch (IllegalArgumentException e) {
 				System.out.println("Illegal workoutID. Choose one from the list");
-				input = -1;
+				exerciseID = -1;
 			}
 
+			if (exerciseID != -1) {
+				System.out.println("Exercise registered. Enter a new exerciseID, or enter 0 to exit to main menu.");
+			}
 
+			try {
+				exerciseID = keyboard.nextInt();
+			}
+			catch (InputMismatchException e) {
+				// Clear the Scanner
+				keyboard.nextLine();
+                System.out.println("Wrong format. Must be a number. Please enter again.");
+                exerciseID = -1;
+			}
 		}
-
 	}
 
-	public static void addExerciseToWorkout(int workoutID, int exerciseID) throws IllegalArgumentException {
+	public static void addExerciseToWorkout(Workout workout, int exerciseID) throws IllegalArgumentException {
 
 		Scanner keyboard = new Scanner(System.in);
+		MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
+		FreeExerciseDatabaseController fedc = new FreeExerciseDatabaseController();
+		PreparedStatement statement;
+		// Find out what type the exerciseID is
+		Exercise exercise = null;
+
+        try {
+			String sql = "SELECT exercise_id " +
+					"FROM free_exercise";
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(sql);
+			ResultSet rs = statement.executeQuery();
+
+			while (rs.next()) {
+				if (rs.getInt("exercise_id") == exerciseID)  {
+					exercise = fedc.retrieve(exerciseID);
+				}
+			}
+			if (exercise == null) {
+				sql = "SELECT exercise_id " +
+						"FROM machine_exercise";
+				statement = connection.prepareStatement(sql);
+				rs = statement.executeQuery();
+
+				while (rs.next()) {
+					if (rs.getInt("exercise_id") == exerciseID) {
+						exercise = medc.retrieve(exerciseID);
+					}
+				}
+			}
+		}
+		catch (SQLException e) {
+        	e.printStackTrace();
+		}
+
+		if (exercise == null) {
+        	throw new IllegalArgumentException("The database does not have a exercise with this exerciseID");
+		}
+
 		System.out.println("How long did you do this exercise?");
 
 		int duration = -1;
@@ -275,12 +327,18 @@ public class UserInterface {
 				duration = keyboard.nextInt();
 			}
 			catch (InputMismatchException e) {
+				// Clear the Scanner
+				keyboard.nextLine();
 				System.out.println("Wrong format. Must be a number. Please enter again");
 				duration = -1;
 			}
 		}
 
+		duration = duration * 60;
 
+		ExerciseDoneDatabaseController eddc = new ExerciseDoneDatabaseController();
+		ExerciseDone exerciseDone = new ExerciseDone(duration, workout, exercise);
+		eddc.create(exerciseDone);
 	}
 
 

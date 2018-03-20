@@ -56,7 +56,7 @@ public class MachineExerciseDatabaseController {
 	}	
 
 
-    public Object retrieve(int id) {
+    public MachineExercise retrieve(int id) {
         String sql = "SELECT * " +
                     "FROM exercise NATURAL JOIN machine_exercise " +
                     "WHERE exercise_id=?";
