@@ -56,6 +56,7 @@ public class UserInterface {
 		DataLoader.load();
 
 		while(!quit) {
+			System.out.println();
 			System.out.println("1: Register machine\n"
 							+ "2: Register exercise\n"
 							+ "3: Register workout\n"
