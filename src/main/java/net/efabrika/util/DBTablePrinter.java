@@ -36,6 +36,7 @@ package net.efabrika.util;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -470,14 +471,32 @@ public class DBTablePrinter {
                     String value;
                     int category = c.getTypeCategory();
 
+
                     if (category == CATEGORY_OTHER) {
 
                         // Use generic SQL type name instead of the actual value
                         // for column types BLOB, BINARY etc.
                         value = "(" + c.getTypeName() + ")";
 
+                    } else if (category == CATEGORY_DATETIME) {
+                        value = rs.getDate(i+1).toGMTString();
+                        
                     } else {
                         value = rs.getString(i+1) == null ? "NULL" : rs.getString(i+1);
+                        
+                        // durations are stored as ints.. converting to human-format
+                        if (c.getLabel().equals("duration")) {
+                        	int dur = rs.getInt(i+1);
+                        	int hours = (int) dur / 3600;
+                        	int remainder = (int) dur - hours * 3600;
+                        	int mins = remainder / 60;
+                        	remainder = remainder - mins * 60;
+                        	int secs = remainder;
+
+                        	Formatter format = new Formatter();
+                        	value = format.format("%2dh, %2dm, %2ds", hours, mins, secs).toString();
+                        	format.close();
+                        }
                     }
                     switch (category) {
                         case CATEGORY_DOUBLE:
