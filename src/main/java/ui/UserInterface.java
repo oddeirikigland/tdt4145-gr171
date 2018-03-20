@@ -285,9 +285,30 @@ public class UserInterface {
 
 	/**
 	 * Registers Machine with associated data
+     * user writes name for machine and description, and the machine will be saved in database
+     *
+     * @author OE
 	 */
 	private static void registerMachine() {
 		// TODO Auto-generated method stub
-		
+		MachineDatabaseController machineDatabaseController = new MachineDatabaseController();
+		Machine machine;
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("What's the name of the machine\n");
+		String name = "";
+		String description = "";
+
+		try {
+			name = keyboard.nextLine();
+            System.out.println("Describe the machine");
+            description = keyboard.nextLine();
+		} catch (InputMismatchException e) {
+			System.err.println("Input must be text!");
+		}
+		machine = new Machine(name, description);
+
+        machineDatabaseController.create(machine);
+		System.out.println("Machine registered");
 	}
 }

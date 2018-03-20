@@ -39,7 +39,7 @@ public class DataLoader {
 	
 	private static void createMachines() {
 		MachineDatabaseController mdc = new MachineDatabaseController();
-		mdc.create(new Machine("Some machine"));	
+		mdc.create(new Machine("Some machine", "Machine Description"));
 	}
 	
 	private static void createExerciseGroups() {
