@@ -1,9 +1,7 @@
 package ui;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -148,8 +146,47 @@ public class UserInterface {
 	 * Get information of workout based on what machine it was performed on
 	 */
 	private static void viewWorkoutOnMachine() {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement statement;
+
+		// List machines, showing ID
+		System.out.println("----MACHINES----");
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "machine", 100, 120);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		// Ask user to choose machine ID
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("Choose machine ID: ");
+		String input = "";
+
+		// Print n latest workouts on the chosen machine
+		try {
+			input = keyboard.nextLine();
+			String sql = "SELECT * "
+					+ "FROM workout "
+					+ "WHERE workout_id IN " +
+					"(SELECT workout_id " +
+					"FROM (machine NATURAL JOIN machine_exercise) " +
+					"NATURAL JOIN exercise_done " +
+					"WHERE machine_id=?)";
+			try {
+				Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+				statement = connection.prepareStatement(sql);
+				statement.setInt(1, Integer.parseInt(input));
+				ResultSet rs = statement.executeQuery();
+				DBTablePrinter.printResultSet(rs, 120);
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (InputMismatchException e) {
+			System.err.println("Input must be a character!");
+		}
 	}
 
 	/**
@@ -280,7 +317,6 @@ public class UserInterface {
 	 */
 	private static void registerWorkout() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/**
