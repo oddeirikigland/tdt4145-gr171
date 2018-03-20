@@ -9,8 +9,9 @@ public class MachineDatabaseController implements DatabaseCRUD {
     public int create(Object object) {
         Machine m1 = (Machine) isMachine(object);
         String sql = "INSERT INTO machine "
-                + "(name)" //, description) "
+                + "(name) " //, description) "
                 + "VALUES(?)"; //, ?)";
+
 
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");

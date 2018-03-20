@@ -2,6 +2,10 @@ package data;
 
 import java.sql.Date;
 
+import core.ExerciseGroup;
+import core.ExerciseGroupDatabaseController;
+import core.Machine;
+import core.MachineDatabaseController;
 import core.Workout;
 import core.WorkoutDatabaseController;
 
@@ -9,6 +13,8 @@ public class DataLoader {
 	
 	public static void load() {
 		createWorkouts();
+		createMachines();
+		createExerciseGroups();
 	}
 
 	private static void createWorkouts() {
@@ -29,5 +35,15 @@ public class DataLoader {
 		
 		w5 = new Workout(new Date(1519394400L), 1800, 8, 8, "Quick Yoga session");
 		w5 = new Workout(wdc.create(w5), w5.getTimestamp(), w5.getDuration(), w5.getForm(), w5.getPerformance(), w5.getNote());
+	}
+	
+	private static void createMachines() {
+		MachineDatabaseController mdc = new MachineDatabaseController();
+		mdc.create(new Machine("Some machine"));	
+	}
+	
+	private static void createExerciseGroups() {
+		ExerciseGroupDatabaseController egdc = new ExerciseGroupDatabaseController();
+		egdc.create(new ExerciseGroup("SomeExerciseGroup"));
 	}
 }
