@@ -20,7 +20,6 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setString(1, exercise.getName());
-
             statement.executeUpdate();
 
             try {

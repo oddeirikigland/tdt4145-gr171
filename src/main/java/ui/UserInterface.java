@@ -2,8 +2,15 @@ package ui;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -19,6 +26,7 @@ import core.Machine;
 import core.MachineDatabaseController;
 import core.MachineExercise;
 import core.MachineExerciseDatabaseController;
+import core.ResultSetConnection;
 import core.WorkoutDatabaseController;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
@@ -267,12 +275,68 @@ public class UserInterface {
 	}
 
 	/**
-	 * For every exercise, retrieve a result log for a given time interval
+	 * For some exercise, retrieve a result log for a given time interval
 	 * where the end-points of the interval is specified by the user
 	 */
 	private static void viewResultLog() {
-		// TODO Auto-generated method stub
+		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("----VIEW RESULT LOG----");
+
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "exercise", 9999, 120);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
+		System.out.println("Which exercise do you want to view log of: ");
+		int id = 0;
+		
+		try {
+			id = keyboard.nextInt();
+		} catch (InputMismatchException e) {
+			System.err.println("Input must be a number!");
+		} 
+		keyboard.nextLine();
+		
+		System.out.println("Start point of interval (format: yyyy-mm-dd hh:mm:ss)");
+		String timestamp = "";
+		Date start = null;
+		while (timestamp.equals("")) {
+			try {
+				timestamp = keyboard.nextLine();
+				Calendar c = Calendar.getInstance();
+				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
+			    start = new Date(c.getTimeInMillis());
+			} catch (ParseException e) {
+				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
+			}
+		}
+
+		System.out.println("End point of interval (format: yyyy-MM-dd HH:mm:ss)");
+		timestamp = "";
+		Date end = null;
+		while (timestamp.equals("")) {
+			try {
+				timestamp = keyboard.nextLine();
+				Calendar c = Calendar.getInstance();
+				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
+				end = new Date(c.getTimeInMillis());
+			} catch (ParseException e) {
+				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
+			}
+		}
+		ResultSetConnection rsConn
+			= wdc.retrieveWorkoutBasedOnExercieAndTime(id, start, end);
+		DBTablePrinter.printResultSet(rsConn.getSet());
+		try {
+			rsConn.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
