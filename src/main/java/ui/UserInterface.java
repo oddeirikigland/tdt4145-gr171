@@ -285,7 +285,7 @@ public class UserInterface {
 
 	/**
 	 * Registers Machine with associated data
-     * user writes name for machine, and the machine will be saved in database
+     * user writes name for machine and description, and the machine will be saved in database
      *
      * @author OE
 	 */
