@@ -68,6 +68,8 @@ public class Workout {
         return workoutID;
     }
 
+    public void setWorkoutID(int id) { this.workoutID = id;}
+
     public Date getTimestamp() {
         return timestamp;
     }

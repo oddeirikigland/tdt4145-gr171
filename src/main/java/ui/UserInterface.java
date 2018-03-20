@@ -1,16 +1,15 @@
 package ui;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import core.DatabaseHandler;
+import core.Workout;
 import core.WorkoutDatabaseController;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
@@ -18,7 +17,8 @@ import net.efabrika.util.DBTablePrinter;
 public class UserInterface {
 	
 	public static void main(String[] args) {
-		startInterface();
+		//startInterface();
+		printExercises();
 	}
 	
 	/**
@@ -107,22 +107,133 @@ public class UserInterface {
 		System.out.println("When was this exercise? (format: yyyy-mm-dd hh:mm");
 
 		String timestamp = "";
+		Date convertedCurrentDate = null;
 		while (timestamp.equals("")) {
 			try {
 				timestamp = keyboard.nextLine();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm");
-				Date convertedCurrentDate = sdf.parse(timestamp);
+				Calendar c = Calendar.getInstance();
+				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(timestamp));
+				convertedCurrentDate = new Date(c.getTimeInMillis());
 			}
 			catch (ParseException e) {
-				System.out.println("Wrong format. Please enter as yyyy-mm-dd hh:mm");
+				System.out.println("Wrong format. Please enter again as yyyy-mm-dd hh:mm");
 				timestamp = "";
 			}
 		}
 
+		System.out.println("What was the duration? (format: nn [minutes])");
 
+		int duration = -1;
+		while (duration == -1) {
+			try {
+				duration = keyboard.nextInt();
+			}
+			catch (InputMismatchException e) {
+				System.out.println("Wrong format. Must be a number. Please enter again.");
+				duration = -1;
+			}
+		}
+
+		System.out.println("What was your form? (format: nn [number 1-10])");
+
+		int form = -1;
+		while (form == -1) {
+			try {
+				form = keyboard.nextInt();
+				if (form < 1 || form > 10) {
+					System.out.println("Invalid number. Must be between 1 and 10");
+					form = -1;
+				}
+			}
+			catch (InputMismatchException e) {
+				System.out.println("Wrong format. Must be a number. Please enter again.");
+				form = -1;
+			}
+		}
+
+		System.out.println("What was your performance? (format: nn [number 1-10])");
+
+		int performance = -1;
+		while (performance == -1) {
+			try {
+				performance = keyboard.nextInt();
+				if (performance < 1 || performance > 10) {
+					System.out.println("Invalid number. Must be between 1 and 10");
+					performance = -1;
+				}
+			}
+			catch (InputMismatchException e ) {
+				System.out.println("Wrong format. Must be a number. Please enter again");
+				performance = -1;
+			}
+		}
+
+		System.out.println("Please enter a one-line note. End with return.");
+
+		String note = "";
+		while (note.length() == 0) {
+			note = keyboard.nextLine();
+		}
+
+		Workout newWorkout = new Workout(convertedCurrentDate, duration, form, performance, note);
+		int workoutID = wdc.create(newWorkout);
+		newWorkout.setWorkoutID(workoutID);
+
+
+		DBTablePrinter tablePrinter = new DBTablePrinter();
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			tablePrinter.printTable(connection, "exercise");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Select exercises that were a part of this workout. [1, 2, ...]. Enter 0 to end.");
+
+		int input = -1;
+		while (input != 0) {
+			while (input == -1) {
+				try {
+					input = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.out.println("Wrong format. Must be a number. Please enter again.");
+					input = -1;
+				}
+
+			}
+			try {
+				addExerciseToWorkout(workoutID, input);
+			}
+			catch (IllegalArgumentException e) {
+				System.out.println("Illegal workoutID. Choose one from the list");
+				input = -1;
+			}
+
+
+		}
+
+	}
+
+	public static void addExerciseToWorkout(int workoutID, int exerciseID) throws IllegalArgumentException {
+
+		Scanner keyboard = new Scanner(System.in);
+		System.out.println("How long did you do this exercise?");
+
+		int duration = -1;
+		while (duration == -1) {
+			try {
+				duration = keyboard.nextInt();
+			}
+			catch (InputMismatchException e) {
+				System.out.println("Wrong format. Must be a number. Please enter again");
+				duration = -1;
+			}
+		}
 
 
 	}
+
 
 	/**
 	 * Get information of workout based on what machine it was performed on
