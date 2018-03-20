@@ -1,56 +1,64 @@
 package core;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class MachineExerciseDatabaseController implements DatabaseCRUD {
+public class MachineExerciseDatabaseController {
+	
+	PreparedStatement statement;
+	
+   public int create(Object object) {
+		MachineExercise exercise = (MachineExercise) isMachineExercise(object);
+		String superSql = "INSERT INTO exercise "
+				+ "(name) "
+				+ "VALUES(?)";
+		String subSql = "INSERT INTO machine_exercise "
+					+ "(exercise_id, sets, kilo, machine_id) "
+					+ "VALUES(?, ?, ?, ?)";
 
-    PreparedStatement statement;
+		try {
+			int i = -1;
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(superSql, PreparedStatement.RETURN_GENERATED_KEYS);
+			statement.setString(1, exercise.getName());
+			statement.executeUpdate();
 
-    public int create(Object object) {
-        MachineExercise me1 = (MachineExercise) isMachineExercise(object);
-        String sql =    "INSERT INTO exercise" +
-                        "(name)" +
-                        "VALUES (?)";
-        try {
-            int id = -1;
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-            /* For Exercise */
-            statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            statement.setString(1, me1.getName());
-            statement.executeUpdate();
+			try {
+				// Retrieves all generated keys, and returns the key of the newly inserted
+				// row. Assumes the row only has one key
+				ResultSet generatedKeys = statement.getGeneratedKeys();
+				if (generatedKeys.next()) {
+					i = Math.toIntExact(generatedKeys.getLong(1));
+				}
 
-            try {
-                // Retrieves all generated keys and returns the ID obtained by java object
-                // which is inserted into the database
-                ResultSet generatedKeys = statement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    id = Math.toIntExact(generatedKeys.getLong(1));
-                    connection.close();
-                    // return i;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            /* For MachineExercise */
-            sql = "INSERT INTO machine_exercise" +
-                    "(exercise_id, kilo, sets, machine_id)" +
-                    "VALUES (?, ?, ?, ?)";
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            statement.setInt(2, me1.getKilograms());
-            statement.setInt(3, me1.getSets());
-            statement.setInt(4, me1.getMachine().getMachineID());
-            connection.close();
-            return id; // returns ID for both exercise and machine_exercise table
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = conn.prepareStatement(subSql, PreparedStatement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, i);
+			statement.setInt(2, exercise.getSets());
+			statement.setInt(3, exercise.getKilograms());
+			statement.setInt(4, exercise.getMachine().getMachineID());
+			statement.executeUpdate();
+			connection.close();
+			return i;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}	
+
 
     public Object retrieve(int id) {
-        String sql = "SELECT *" +
-                    "FROM exercise NATURAL JOIN machine_exercise" +
+        String sql = "SELECT * " +
+                    "FROM exercise NATURAL JOIN machine_exercise " +
                     "WHERE exercise_id=?";
 
         try {
