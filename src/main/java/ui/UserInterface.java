@@ -136,26 +136,26 @@ public class UserInterface {
 	 * Get information of workout based on what machine it was performed on
 	 */
 	private static void viewWorkoutOnMachine() {
-		PreparedStatement statement;
 		ViewWorkoutOnMachineDatabaseController vwomdc = new ViewWorkoutOnMachineDatabaseController();
-
 
 		// List machines, showing ID
 		vwomdc.printMachines();
 
 		// Ask user to choose machine ID
 		Scanner keyboard = new Scanner(System.in);
-
 		System.out.println("Choose machine ID: ");
 		String input = "";
 
-		// Print n latest workouts on the chosen machine
-		try {
-			input = keyboard.nextLine();
-			vwomdc.retrieveMachineByID(Integer.parseInt(input));
+		// Print workouts on the chosen machine
+		while (input.equals("")) {
+			try {
+				input = keyboard.nextLine();
+				vwomdc.retrieveMachineByID(Integer.parseInt(input));
 
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
+			} catch (NumberFormatException e) {
+				System.err.println("Input must be a number!");
+				input = "";
+			}
 		}
 	}
 
