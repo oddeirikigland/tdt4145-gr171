@@ -10,7 +10,7 @@ public class DataLoader {
 		createWorkouts();
 		createMachines();
 		createExerciseGroups();
-		// dummyConnection();
+		createWorkoutBasedOnMachineData();
 	}
 
 	private static void createWorkouts() {
@@ -43,7 +43,7 @@ public class DataLoader {
 		egdc.create(new ExerciseGroup("SomeExerciseGroup"));
 	}
 
-	private static void dummyConnection() {
+	private static void createWorkoutBasedOnMachineData() {
 	    MachineDatabaseController mdc = new MachineDatabaseController();
 	    int machine_id = mdc.create(new Machine("nedtrekkStativ", "trekk ned stanga"));
 	    Machine machine = mdc.retrieve(machine_id);

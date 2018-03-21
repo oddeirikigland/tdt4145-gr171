@@ -7,26 +7,16 @@ import java.util.Scanner;
 
 import javax.sound.midi.Soundbank;
 
-import core.DatabaseHandler;
-import core.ExerciseGroup;
-import core.ExerciseGroupDatabaseController;
-import core.FreeExercise;
-import core.FreeExerciseDatabaseController;
-import core.IncludesDatabaseController;
-import core.Machine;
-import core.MachineDatabaseController;
-import core.MachineExercise;
-import core.MachineExerciseDatabaseController;
-import core.WorkoutDatabaseController;
+import core.*;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
 
 public class UserInterface {
-	
+
 	public static void main(String[] args) {
 		startInterface();
 	}
-	
+
 	/**
 	 * Loads up CLI and asks user for input, performing actions based on that
 	 */
@@ -34,7 +24,7 @@ public class UserInterface {
 		int input = 0;
 		Scanner keyboard = new Scanner(System.in);
 		boolean quit = false;
-		
+
 		try {
 			DatabaseHandler.database(true);
 			DatabaseHandler.database(false);
@@ -42,7 +32,7 @@ public class UserInterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		DataLoader.load();
 
 		while(!quit) {
@@ -59,7 +49,7 @@ public class UserInterface {
 			} catch (InputMismatchException e) {
 				System.err.println("Input must be a number!");
 				continue;
-			} 
+			}
 
 			switch (input) {
 			case 1: registerMachine();  break;
@@ -93,7 +83,7 @@ public class UserInterface {
 	 */
 	private static void registerExerciseGroup() {
 		Scanner keyboard = new Scanner(System.in);
-		
+
 		System.out.println("-----REGISTER EXERCISE GROUP----");
 		System.out.println("Exercise group name: ");
 		String name = null;
@@ -103,7 +93,7 @@ public class UserInterface {
 		} catch (InputMismatchException e) {
 			System.err.println("Input must be text!");
 		}
-		
+
 		ExerciseGroup eg = new ExerciseGroup(name);
 		ExerciseGroupDatabaseController egdc = new ExerciseGroupDatabaseController();
 		eg = new ExerciseGroup(egdc.create(eg), eg.getName());
@@ -116,7 +106,7 @@ public class UserInterface {
 	}
 
 	/**
-	 * Get information about the n-previous Workouts with their notes, 
+	 * Get information about the n-previous Workouts with their notes,
 	 * based on input from user
 	 */
 	private static void viewWorkouts() {
@@ -131,7 +121,7 @@ public class UserInterface {
 			input = keyboard.nextInt();
 		} catch (InputMismatchException e) {
 			System.err.println("Input must be a number!");
-		} 
+		}
 
 		Connection conn;
 		try {
@@ -147,16 +137,11 @@ public class UserInterface {
 	 */
 	private static void viewWorkoutOnMachine() {
 		PreparedStatement statement;
+		ViewWorkoutOnMachineDatabaseController vwomdc = new ViewWorkoutOnMachineDatabaseController();
+
 
 		// List machines, showing ID
-		System.out.println("----MACHINES----");
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-			DBTablePrinter.printTable(conn, "machine", 100, 120);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		vwomdc.printMachines();
 
 		// Ask user to choose machine ID
 		Scanner keyboard = new Scanner(System.in);
@@ -167,25 +152,10 @@ public class UserInterface {
 		// Print n latest workouts on the chosen machine
 		try {
 			input = keyboard.nextLine();
-			String sql = "SELECT * "
-					+ "FROM workout "
-					+ "WHERE workout_id IN " +
-					"(SELECT workout_id " +
-					"FROM (machine NATURAL JOIN machine_exercise) " +
-					"NATURAL JOIN exercise_done " +
-					"WHERE machine_id=?)";
-			try {
-				Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-				statement = connection.prepareStatement(sql);
-				statement.setInt(1, Integer.parseInt(input));
-				ResultSet rs = statement.executeQuery();
-				DBTablePrinter.printResultSet(rs, 120);
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			vwomdc.retrieveMachineByID(Integer.parseInt(input));
+
 		} catch (InputMismatchException e) {
-			System.err.println("Input must be a character!");
+			System.err.println("Input must be a number!");
 		}
 	}
 
@@ -204,8 +174,8 @@ public class UserInterface {
 			input = keyboard.nextLine();
 		} catch (InputMismatchException e) {
 			System.err.println("Input must be a character!");
-		} 
-		
+		}
+
 		if (!input.toLowerCase().equals("n")) {
 			// link Exercise to an ExerciseGroup
 			Connection conn;
@@ -215,7 +185,7 @@ public class UserInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("Select the ID of the ExerciseGroup to register new Exercise to: ");
 			int id = 0;
 
@@ -237,7 +207,7 @@ public class UserInterface {
 
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
-		
+
 		try {
 			input = keyboard.nextInt();
 			keyboard.nextLine();
@@ -247,17 +217,17 @@ public class UserInterface {
 
 		System.out.println("Name of exercise: ");
 		String name;
-		name = keyboard.nextLine();	
+		name = keyboard.nextLine();
 
 		if (input == 1) {
 			// register FreeExercise
 			System.out.println("Description of exercise: ");
 			String desc = keyboard.nextLine();
-			
+
 			FreeExerciseDatabaseController fedc = new FreeExerciseDatabaseController();
 			FreeExercise freeExercise = new FreeExercise(name, desc);
 			fedc.create(freeExercise);
-			
+
 			if (id != 0) {
 				idc.create(id, freeExercise);
 			}
@@ -288,7 +258,7 @@ public class UserInterface {
 			MachineDatabaseController mdc = new MachineDatabaseController();
 			Machine machine = mdc.retrieve(machineID);
 			MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
-			MachineExercise exercise 
+			MachineExercise exercise
 				= new MachineExercise(
 					name,
 					kilograms,
@@ -296,7 +266,7 @@ public class UserInterface {
 					machine
 				);
 			medc.create(exercise);
-			
+
 			if (id != 0) {
 				idc.create(id, exercise);
 			}
@@ -309,7 +279,7 @@ public class UserInterface {
 	 */
 	private static void viewResultLog() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
