@@ -285,13 +285,15 @@ public class UserInterface {
 		System.out.println("Which exercise do you want to view log of: ");
 		int id = 0;
 		
-		try {
-			id = keyboard.nextInt();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
-			return;
-		} 
-		keyboard.nextLine();
+		while (id == 0) {
+			try {
+				id = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a number!");
+			} finally {
+				keyboard.nextLine();
+			}
+		}
 		
 		System.out.println("Start point of interval (format: yyyy-mm-dd hh:mm:ss)");
 		String timestamp = "";
@@ -304,7 +306,6 @@ public class UserInterface {
 			    start = new Date(c.getTimeInMillis());
 			} catch (ParseException e) {
 				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
-				return;
 			}
 		}
 
@@ -319,7 +320,6 @@ public class UserInterface {
 				end = new Date(c.getTimeInMillis());
 			} catch (ParseException e) {
 				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
-				return;
 			}
 		}
 		ResultSetConnection rsConn
