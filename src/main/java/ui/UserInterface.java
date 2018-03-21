@@ -122,12 +122,15 @@ public class UserInterface {
 		System.out.println("How many workouts do you want to see?\n");
 		int input = 0;
 
-		try {
-			input = keyboard.nextInt();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
-			return;
-		} 
+		while (input == 0) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a number!");
+			} finally {
+				keyboard.nextLine();
+			}
+		}
 
 		Connection conn;
 		try {
@@ -298,30 +301,38 @@ public class UserInterface {
 		System.out.println("Start point of interval (format: yyyy-mm-dd hh:mm:ss)");
 		String timestamp = "";
 		Date start = null;
-		while (timestamp.equals("")) {
+		boolean flag = true;
+
+		while (flag) {
 			try {
 				timestamp = keyboard.nextLine();
 				Calendar c = Calendar.getInstance();
 				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
 			    start = new Date(c.getTimeInMillis());
+				flag = false;
 			} catch (ParseException e) {
 				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
+				flag = true;
 			}
 		}
 
 		System.out.println("End point of interval (format: yyyy-MM-dd HH:mm:ss)");
 		timestamp = "";
 		Date end = null;
-		while (timestamp.equals("")) {
+		flag = true;
+		while (flag) {
 			try {
 				timestamp = keyboard.nextLine();
 				Calendar c = Calendar.getInstance();
 				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
 				end = new Date(c.getTimeInMillis());
+				flag = false;
 			} catch (ParseException e) {
-				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
+				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss)");
+				flag = true;
 			}
 		}
+
 		ResultSetConnection rsConn
 			= wdc.retrieveWorkoutBasedOnExercieAndTime(id, start, end);
 		DBTablePrinter.printResultSet(rsConn.getSet());
