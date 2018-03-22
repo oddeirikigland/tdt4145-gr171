@@ -14,17 +14,19 @@ public class Machine {
      * @param machineID
      * @param name
      */
-    public Machine(int machineID, String name) {
+    public Machine(int machineID, String name, String description) {
         this.machineID = machineID;
         this.name = name;
+        this.description = description;
     }
 
     /**
      * constructor for controller
      * @param name
      */
-    public Machine(String name) {
+    public Machine(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     /**

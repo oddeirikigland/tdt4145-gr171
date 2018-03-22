@@ -93,10 +93,12 @@ public class UserInterface {
 		System.out.println("Exercise group name: ");
 		String name = null;
 
-		try {
-			name = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be text!");
+		while (name == null) {
+			try {
+				name = keyboard.nextLine();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be text!");
+			}	
 		}
 		
 		ExerciseGroup eg = new ExerciseGroup(name);
@@ -162,9 +164,8 @@ public class UserInterface {
 
 		try {
 			input = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a character!");
-			return;
+		} catch (InputMismatchException ignore) {
+			// ignores since Y is default
 		} 
 		
 		if (!input.toLowerCase().equals("n")) {
@@ -180,12 +181,16 @@ public class UserInterface {
 			System.out.println("Select the ID of the ExerciseGroup to register new Exercise to: ");
 			int id = 0;
 
-			try {
-				id = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
-				return;
+			while (id < 1) {
+				try {
+					id = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
 			registerExercise(id);
 			return;
 		}
@@ -199,14 +204,17 @@ public class UserInterface {
 
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
-		
-		try {
-			input = keyboard.nextInt();
-			keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
-			return;
+
+		while (input == 0) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be 1 or 2!");
+			} finally {
+				keyboard.nextLine();
+      }
 		}
+		
 
 		System.out.println("Name of exercise: ");
 		String name;
@@ -237,18 +245,40 @@ public class UserInterface {
 			int machineID = 0;
 			int sets = 0;
 			int kilograms = 0;
-
-			try {
-				System.out.println("MachineID: ");
-				machineID = keyboard.nextInt();
-				System.out.println("Sets: ");
-				sets = keyboard.nextInt();
-				System.out.println("Kilograms: ");
-				kilograms = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
-				return;
+			
+			System.out.println("MachineID: ");
+			while (machineID == 0) {
+				try {
+					machineID = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
+			System.out.println("Sets: ");
+			while (sets == 0) {
+				try {
+					sets = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a number between 1 and 10!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+			
+			System.out.println("Kilograms: ");
+			while (kilograms == 0) {
+			try {
+					kilograms = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+
 			MachineDatabaseController mdc = new MachineDatabaseController();
 			Machine machine = mdc.retrieve(machineID);
 			MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
@@ -353,9 +383,30 @@ public class UserInterface {
 
 	/**
 	 * Registers Machine with associated data
+     * user writes name for machine and description, and the machine will be saved in database
+     *
+     * @author OE
 	 */
 	private static void registerMachine() {
 		// TODO Auto-generated method stub
-		
+		MachineDatabaseController machineDatabaseController = new MachineDatabaseController();
+		Machine machine;
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("What's the name of the machine\n");
+		String name = "";
+		String description = "";
+
+		try {
+			name = keyboard.nextLine();
+            System.out.println("Describe the machine");
+            description = keyboard.nextLine();
+		} catch (InputMismatchException e) {
+			System.err.println("Input must be text!");
+		}
+		machine = new Machine(name, description);
+
+        machineDatabaseController.create(machine);
+		System.out.println("Machine registered");
 	}
 }
