@@ -134,12 +134,23 @@ public class UserInterface {
 
 	/**
 	 * Get information of workout based on what machine it was performed on
+     * Print first all machines registered, max 100
+     * User chose machine, by machine id
+     * all workouts done on that machine is printed
+     * 
 	 */
 	private static void viewWorkoutOnMachine() {
-		ViewWorkoutOnMachineDatabaseController vwomdc = new ViewWorkoutOnMachineDatabaseController();
+		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
 
 		// List machines, showing ID
-		vwomdc.printMachines();
+		System.out.println("----MACHINES----");
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "machine", 100, 120);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		// Ask user to choose machine ID
 		Scanner keyboard = new Scanner(System.in);
@@ -150,8 +161,7 @@ public class UserInterface {
 		while (input.equals("")) {
 			try {
 				input = keyboard.nextLine();
-				vwomdc.retrieveMachineByID(Integer.parseInt(input));
-
+				wdc.retrieveMachineByID(Integer.parseInt(input));
 			} catch (NumberFormatException e) {
 				System.err.println("Input must be a number!");
 				input = "";
