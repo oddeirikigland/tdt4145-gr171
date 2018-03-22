@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import javax.sound.midi.Soundbank;
-
 import core.DatabaseHandler;
 import core.ExerciseGroup;
 import core.ExerciseGroupDatabaseController;
@@ -100,10 +98,12 @@ public class UserInterface {
 		System.out.println("Exercise group name: ");
 		String name = null;
 
-		try {
-			name = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be text!");
+		while (name == null) {
+			try {
+				name = keyboard.nextLine();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be text!");
+			}	
 		}
 		
 		ExerciseGroup eg = new ExerciseGroup(name);
@@ -129,11 +129,13 @@ public class UserInterface {
 		System.out.println("How many workouts do you want to see?\n");
 		int input = 0;
 
-		try {
-			input = keyboard.nextInt();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
-		} 
+		while (input < 1) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a positive number!");
+			}
+		}
 
 		Connection conn;
 		try {
@@ -165,8 +167,8 @@ public class UserInterface {
 
 		try {
 			input = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a character!");
+		} catch (InputMismatchException ignore) {
+			// ignores since Y is default
 		} 
 		
 		if (!input.toLowerCase().equals("n")) {
@@ -182,11 +184,16 @@ public class UserInterface {
 			System.out.println("Select the ID of the ExerciseGroup to register new Exercise to: ");
 			int id = 0;
 
-			try {
-				id = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
+			while (id < 1) {
+				try {
+					id = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
 			registerExercise(id);
 			return;
 		}
@@ -201,12 +208,16 @@ public class UserInterface {
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
 		
-		try {
-			input = keyboard.nextInt();
-			keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
+		while (input == 0) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be 1 or 2!");
+			} finally {
+				keyboard.nextLine();
+			}
 		}
+		
 
 		System.out.println("Name of exercise: ");
 		String name;
@@ -237,17 +248,40 @@ public class UserInterface {
 			int machineID = 0;
 			int sets = 0;
 			int kilograms = 0;
-
-			try {
-				System.out.println("MachineID: ");
-				machineID = keyboard.nextInt();
-				System.out.println("Sets: ");
-				sets = keyboard.nextInt();
-				System.out.println("Kilograms: ");
-				kilograms = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
+			
+			System.out.println("MachineID: ");
+			while (machineID == 0) {
+				try {
+					machineID = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
+			System.out.println("Sets: ");
+			while (sets == 0) {
+				try {
+					sets = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a number between 1 and 10!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+			
+			System.out.println("Kilograms: ");
+			while (kilograms == 0) {
+			try {
+					kilograms = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+
 			MachineDatabaseController mdc = new MachineDatabaseController();
 			Machine machine = mdc.retrieve(machineID);
 			MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
