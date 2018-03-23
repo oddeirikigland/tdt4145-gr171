@@ -1,4 +1,4 @@
-package core;
+package data;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -49,8 +49,7 @@ public class DatabaseHandler {
                 }
             }
  
-        } catch (SQLException e) {
-        	System.out.println(e.getMessage());
+        } catch (SQLException ignore) {
         }
     }
  

@@ -1,6 +1,9 @@
-package core;
+package controllers;
 
 import java.sql.*;
+
+import core.DatabaseCRUD;
+import core.FreeExercise;
 
 public class FreeExerciseDatabaseController implements DatabaseCRUD {
 

@@ -1,4 +1,4 @@
-package core;
+package controllers;
 
 import net.efabrika.util.DBTablePrinter;
 
@@ -8,6 +8,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import core.DatabaseCRUD;
+import core.ResultSetConnection;
+import core.Workout;
+
 import java.lang.Math;
 
 public class WorkoutDatabaseController implements DatabaseCRUD {

@@ -1,4 +1,4 @@
-package core;
+package controllers;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.sun.javafx.collections.MappingChange.Map;
+
+import core.ExerciseGroup;
 
 public class ExerciseGroupDatabaseController {
 	
