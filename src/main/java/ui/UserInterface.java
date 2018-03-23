@@ -306,8 +306,6 @@ public class UserInterface {
 			freeExercise.setExerciseID(fedc.create(freeExercise));
 
 			if (id != 0) {
-			// TODO Auto-generated catch block
-				System.out.println(freeExercise.getExerciseID());
 				idc.create(id, freeExercise);
 			}
 		}
