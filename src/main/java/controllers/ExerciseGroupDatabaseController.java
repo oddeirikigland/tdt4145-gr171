@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import com.sun.javafx.collections.MappingChange.Map;
 
 import core.ExerciseGroup;
+import core.ResultSetConnection;
 
 public class ExerciseGroupDatabaseController {
 	
