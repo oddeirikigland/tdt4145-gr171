@@ -257,7 +257,7 @@ public class UserInterface {
 				addExerciseToWorkout(newWorkout, exerciseID);
 			}
 			catch (IllegalArgumentException e) {
-				System.out.println("Illegal workoutID. Choose one from the list");
+				System.out.println("Illegal exerciseID. Choose one from the list");
 				exerciseID = -1;
 			}
 
@@ -286,34 +286,10 @@ public class UserInterface {
 		// Find out what type the exerciseID is
 		Exercise exercise = null;
 
-        try {
-			String sql = "SELECT exercise_id " +
-					"FROM free_exercise";
-			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-			statement = connection.prepareStatement(sql);
-			ResultSet rs = statement.executeQuery();
-
-			while (rs.next()) {
-				if (rs.getInt("exercise_id") == exerciseID)  {
-					exercise = fedc.retrieve(exerciseID);
-				}
-			}
-			if (exercise == null) {
-				sql = "SELECT exercise_id " +
-						"FROM machine_exercise";
-				statement = connection.prepareStatement(sql);
-				rs = statement.executeQuery();
-
-				while (rs.next()) {
-					if (rs.getInt("exercise_id") == exerciseID) {
-						exercise = medc.retrieve(exerciseID);
-					}
-				}
-			}
-		}
-		catch (SQLException e) {
-        	e.printStackTrace();
-		}
+        exercise = fedc.exerciseIDIsFreeExercise(exerciseID);
+        if (exercise == null) {
+            exercise = medc.exerciseIDIsMachineExercise(exerciseID);
+        }
 
 		if (exercise == null) {
         	throw new IllegalArgumentException("The database does not have a exercise with this exerciseID");

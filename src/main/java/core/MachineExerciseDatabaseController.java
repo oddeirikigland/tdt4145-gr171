@@ -87,6 +87,27 @@ public class MachineExerciseDatabaseController {
         return null;
     }
 
+
+	public MachineExercise exerciseIDIsMachineExercise(int exerciseID) {
+		MachineExercise exercise = null;
+		try {
+			String sql = "SELECT exercise_id " +
+					"FROM machine_exercise";
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(sql);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				if (rs.getInt("exercise_id") == exerciseID) {
+					exercise = retrieve(exerciseID);
+				}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return exercise;
+	}
+
     @Deprecated
     public void update(Object object) {
 
