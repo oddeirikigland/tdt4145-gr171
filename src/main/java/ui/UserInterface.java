@@ -260,6 +260,11 @@ public class UserInterface {
 				System.out.println("Illegal exerciseID. Choose one from the list");
 				exerciseID = -1;
 			}
+			catch (IllegalStateException e) {
+				System.out.println("You have already registered this exercise to this workout. Duplicates not possible. Register a new exercise to enter more.");
+				System.out.println("Select exercises that were a part of this workout. [1, 2, ...]. Enter 0 to end.");
+				exerciseID = -1;
+			}
 
 			if (exerciseID != -1) {
 				System.out.println("Exercise registered. Enter a new exerciseID, or enter 0 to exit to main menu.");
@@ -277,7 +282,7 @@ public class UserInterface {
 		}
 	}
 
-	public static void addExerciseToWorkout(Workout workout, int exerciseID) throws IllegalArgumentException {
+	public static void addExerciseToWorkout(Workout workout, int exerciseID) throws IllegalArgumentException, IllegalStateException {
 
 		Scanner keyboard = new Scanner(System.in);
 		MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
@@ -314,7 +319,13 @@ public class UserInterface {
 
 		ExerciseDoneDatabaseController eddc = new ExerciseDoneDatabaseController();
 		ExerciseDone exerciseDone = new ExerciseDone(duration, workout, exercise);
-		eddc.create(exerciseDone);
+		try {
+			eddc.create(exerciseDone);
+		}
+		catch (SQLException e) {
+			// Restriction of the database
+			throw new IllegalStateException("Cannot select the same exerciseID twice in the same workout");
+		}
 	}
 
 
