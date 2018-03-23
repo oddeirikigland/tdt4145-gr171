@@ -1,5 +1,7 @@
 package core;
 
+import net.efabrika.util.DBTablePrinter;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -156,6 +158,28 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
         	e.printStackTrace();
         }
 	}
+
+    public ResultSetConnection retrieveWorkoutBasedOnMachineID(int machineID) {
+        String sql = "SELECT * "
+                + "FROM workout "
+                + "WHERE workout_id IN " +
+                "(SELECT workout_id " +
+                "FROM (machine NATURAL JOIN machine_exercise) " +
+                "NATURAL JOIN exercise_done " +
+                "WHERE machine_id=?)";
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, machineID);
+            ResultSet rs = statement.executeQuery();
+
+            ResultSetConnection rsConn = new ResultSetConnection(rs, connection);
+            return rsConn;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 	
 	private Object isWorkout(Object obj) {
 		if (obj instanceof Workout) {
@@ -164,5 +188,4 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 			throw new IllegalArgumentException("Object must be a Workout");
 		}
 	}
-
 }

@@ -1,7 +1,6 @@
 package data;
 
 import java.sql.Date;
-
 import core.ExerciseDone;
 import core.ExerciseDoneDatabaseController;
 import core.ExerciseGroup;
@@ -12,6 +11,9 @@ import core.Machine;
 import core.MachineDatabaseController;
 import core.Workout;
 import core.WorkoutDatabaseController;
+import core.MachineExerciseDatabaseController;
+import core.MachineExercise;
+import core.Exercise;
 
 public class DataLoader {
 	
@@ -19,6 +21,7 @@ public class DataLoader {
 		createWorkouts();
 		createMachines();
 		createExerciseGroups();
+		createWorkoutBasedOnMachineData();
 		createExercises();
 	}
 
@@ -63,4 +66,23 @@ public class DataLoader {
 		ExerciseGroupDatabaseController egdc = new ExerciseGroupDatabaseController();
 		egdc.create(new ExerciseGroup("SomeExerciseGroup"));
 	}
+
+	private static void createWorkoutBasedOnMachineData() {
+	    MachineDatabaseController mdc = new MachineDatabaseController();
+	    int machine_id = mdc.create(new Machine("nedtrekkStativ", "trekk ned stanga"));
+	    Machine machine = mdc.retrieve(machine_id);
+
+	    MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
+	    int machineExercise_id = medc.create(new MachineExercise("nedtrekk",200, 3, machine));
+	    Exercise exercise = (Exercise) medc.retrieve(machineExercise_id);
+
+	    WorkoutDatabaseController wdc = new WorkoutDatabaseController();
+	    int workout_id = wdc.create(new Workout(new Date(1619394400L), 2000, 3, 5, "Boling"));
+	    Workout workout = wdc.retrieve(workout_id);
+
+        ExerciseDoneDatabaseController eddc = new ExerciseDoneDatabaseController();
+        eddc.create(new ExerciseDone(34, workout, exercise));
+
+
+    }
 }
