@@ -1,6 +1,9 @@
 package ui;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -10,19 +13,20 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import core.DatabaseHandler;
+
+import controllers.ExerciseGroupDatabaseController;
+import controllers.FreeExerciseDatabaseController;
+import controllers.IncludesDatabaseController;
+import controllers.MachineDatabaseController;
+import controllers.MachineExerciseDatabaseController;
+import controllers.WorkoutDatabaseController;
 import core.ExerciseGroup;
-import core.ExerciseGroupDatabaseController;
 import core.FreeExercise;
-import core.FreeExerciseDatabaseController;
-import core.IncludesDatabaseController;
 import core.Machine;
-import core.MachineDatabaseController;
 import core.MachineExercise;
-import core.MachineExerciseDatabaseController;
 import core.ResultSetConnection;
-import core.WorkoutDatabaseController;
 import data.DataLoader;
+import data.DatabaseHandler;
 import net.efabrika.util.DBTablePrinter;
 
 public class UserInterface {
@@ -39,15 +43,18 @@ public class UserInterface {
 		Scanner keyboard = new Scanner(System.in);
 		boolean quit = false;
 
-		try {
-			DatabaseHandler.database(true);
-			DatabaseHandler.database(false);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		String path = "database.db";
+		Path dbPath = Paths.get(path);
 
-		DataLoader.load();
+		if (! Files.exists(dbPath)) {
+			try {
+				DatabaseHandler.database(false);
+				DataLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
+
 
 		while(!quit) {
 			System.out.println();

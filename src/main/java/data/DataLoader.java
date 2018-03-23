@@ -1,17 +1,18 @@
 package data;
 
 import java.sql.Date;
+
+import controllers.ExerciseDoneDatabaseController;
+import controllers.ExerciseGroupDatabaseController;
+import controllers.FreeExerciseDatabaseController;
+import controllers.MachineDatabaseController;
+import controllers.MachineExerciseDatabaseController;
+import controllers.WorkoutDatabaseController;
 import core.ExerciseDone;
-import core.ExerciseDoneDatabaseController;
 import core.ExerciseGroup;
-import core.ExerciseGroupDatabaseController;
 import core.FreeExercise;
-import core.FreeExerciseDatabaseController;
 import core.Machine;
-import core.MachineDatabaseController;
 import core.Workout;
-import core.WorkoutDatabaseController;
-import core.MachineExerciseDatabaseController;
 import core.MachineExercise;
 import core.Exercise;
 

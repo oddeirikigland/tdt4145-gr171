@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import controllers.WorkoutDatabaseController;
+import data.DatabaseHandler;
+
 public class WorkoutDatabaseControllerTest {
 	
 	WorkoutDatabaseController wdc;
