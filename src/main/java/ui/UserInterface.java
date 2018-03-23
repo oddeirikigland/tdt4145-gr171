@@ -597,14 +597,6 @@ public class UserInterface {
 		}
 	}
 
-
-	/**
-	 * Registers Workout with associated data
-	 */
-	private static void registerWorkout() {
-		// TODO Auto-generated method stub
-	}
-
 	/**
 	 * Registers Machine with associated data
      * user writes name for machine and description, and the machine will be saved in database
