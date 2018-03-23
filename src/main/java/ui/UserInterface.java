@@ -62,7 +62,8 @@ public class UserInterface {
 							+ "5: View result-log\n"
 							+ "6: Register exercise group\n"
 							+ "7: Get workout based on machine\n"
-							+ "8: Quit\n");
+							+ "8: Get exercises from a group\n"
+							+ "9: Quit\n");
 			try {
 				input = keyboard.nextInt();
 			} catch (InputMismatchException e) {
@@ -78,13 +79,49 @@ public class UserInterface {
 			case 5: viewResultLog(); break;
 			case 6: registerExerciseGroup(); break;
 			case 7: viewWorkoutOnMachine(); break;
-			case 8: quit = true; break;
+			case 8: viewExercisesFromGroup(); break;
+			case 9: quit = true; break;
 			default: System.out.println("Number must be 1-8"); continue;
 			}
 		}
 		keyboard.close();
 	}
 
+	/** 
+	 * Views exercises based on exercise group
+	 */
+	private static void viewExercisesFromGroup() {
+		Scanner keyboard = new Scanner(System.in);
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "exercise_group", 9999, 120);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		int id = 0;
+		
+		System.out.println("Select a group: ");
+		while (id < 1) {
+			try {
+				id = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a positive number!");
+			} finally {
+				keyboard.nextLine();
+			}
+		}
+
+		ExerciseGroupDatabaseController egdc = new ExerciseGroupDatabaseController();
+		ResultSetConnection rsConn = egdc.retrieveExercises(id);
+		DBTablePrinter.printResultSet(rsConn.getSet());
+
+		try {
+			rsConn.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Registers ExerciseGroup
@@ -463,7 +500,7 @@ public class UserInterface {
 
 			FreeExerciseDatabaseController fedc = new FreeExerciseDatabaseController();
 			FreeExercise freeExercise = new FreeExercise(name, desc);
-			fedc.create(freeExercise);
+			freeExercise.setExerciseID(fedc.create(freeExercise));
 
 			if (id != 0) {
 				idc.create(id, freeExercise);
@@ -525,7 +562,7 @@ public class UserInterface {
 					sets,
 					machine
 				);
-			medc.create(exercise);
+			exercise.setExerciseID(medc.create(exercise));
 
 			if (id != 0) {
 				idc.create(id, exercise);
