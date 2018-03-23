@@ -1,6 +1,8 @@
 package data;
 
 import java.sql.Date;
+import java.sql.SQLException;
+
 
 import controllers.ExerciseDoneDatabaseController;
 import controllers.ExerciseGroupDatabaseController;
@@ -35,7 +37,12 @@ public class DataLoader {
 		freeExercise = new FreeExercise(fedc.create(freeExercise), freeExercise.getName(), freeExercise.getDescription());
 		Workout workout = wdc.retrieve(1);
 		ExerciseDone exerciseDone = new ExerciseDone(3600, workout, freeExercise);
-		eddc.create(exerciseDone);
+		try {
+			eddc.create(exerciseDone);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void createWorkouts() {
@@ -82,7 +89,12 @@ public class DataLoader {
 	    Workout workout = wdc.retrieve(workout_id);
 
         ExerciseDoneDatabaseController eddc = new ExerciseDoneDatabaseController();
-        eddc.create(new ExerciseDone(34, workout, exercise));
+        try {
+			eddc.create(new ExerciseDone(34, workout, exercise));
+		}
+		catch (SQLException e){
+        	e.printStackTrace();
+		}
 
 
     }

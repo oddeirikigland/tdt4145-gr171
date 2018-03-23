@@ -52,7 +52,7 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
         return -1;
     }
 
-    public Object retrieve(int id) {
+    public FreeExercise retrieve(int id) {
         String sql = "SELECT *" +
                 "FROM exercise NATURAL JOIN free_exercise " +
                 "WHERE exercise_id=?";
@@ -88,6 +88,26 @@ public class FreeExerciseDatabaseController implements DatabaseCRUD {
     @Deprecated
     public void delete(int id) {
 
+    }
+
+    public FreeExercise exerciseIDIsFreeExercise(int exerciseID) {
+        FreeExercise exercise = null;
+        try {
+            String sql = "SELECT exercise_id " +
+                    "FROM free_exercise";
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+            statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                if (rs.getInt("exercise_id") == exerciseID) {
+                    exercise = retrieve(exerciseID);
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return exercise;
     }
 
 

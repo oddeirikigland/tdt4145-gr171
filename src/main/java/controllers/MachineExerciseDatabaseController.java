@@ -59,7 +59,7 @@ public class MachineExerciseDatabaseController {
 	}	
 
 
-    public Object retrieve(int id) {
+    public MachineExercise retrieve(int id) {
         String sql = "SELECT * " +
                     "FROM exercise NATURAL JOIN machine_exercise " +
                     "WHERE exercise_id=?";
@@ -89,6 +89,27 @@ public class MachineExerciseDatabaseController {
         }
         return null;
     }
+
+
+	public MachineExercise exerciseIDIsMachineExercise(int exerciseID) {
+		MachineExercise exercise = null;
+		try {
+			String sql = "SELECT exercise_id " +
+					"FROM machine_exercise";
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(sql);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				if (rs.getInt("exercise_id") == exerciseID) {
+					exercise = retrieve(exerciseID);
+				}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return exercise;
+	}
 
     @Deprecated
     public void update(Object object) {
