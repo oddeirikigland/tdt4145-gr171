@@ -1,6 +1,9 @@
 package ui;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -40,15 +43,18 @@ public class UserInterface {
 		Scanner keyboard = new Scanner(System.in);
 		boolean quit = false;
 
-		try {
-			DatabaseHandler.database(true);
-			DatabaseHandler.database(false);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		String path = "database.db";
+		Path dbPath = Paths.get(path);
 
-		DataLoader.load();
+		if (! Files.exists(dbPath)) {
+			try {
+				DatabaseHandler.database(false);
+				DataLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
+
 
 		while(!quit) {
 			System.out.println();

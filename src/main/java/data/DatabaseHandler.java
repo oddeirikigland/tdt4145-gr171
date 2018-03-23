@@ -49,8 +49,7 @@ public class DatabaseHandler {
                 }
             }
  
-        } catch (SQLException e) {
-        	System.out.println(e.getMessage());
+        } catch (SQLException ignore) {
         }
     }
  
