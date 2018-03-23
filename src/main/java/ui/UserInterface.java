@@ -17,12 +17,7 @@ import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import controllers.ExerciseGroupDatabaseController;
-import controllers.FreeExerciseDatabaseController;
-import controllers.IncludesDatabaseController;
-import controllers.MachineDatabaseController;
-import controllers.MachineExerciseDatabaseController;
-import controllers.WorkoutDatabaseController;
+import controllers.*;
 
 import core.*;
 
