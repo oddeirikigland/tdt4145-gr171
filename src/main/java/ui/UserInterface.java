@@ -2,12 +2,29 @@ package ui;
 
 import java.io.IOException;
 import java.sql.*;
+import javax.sound.midi.Soundbank;
+import core.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
-import javax.sound.midi.Soundbank;
-
-import core.*;
+import core.DatabaseHandler;
+import core.ExerciseGroup;
+import core.ExerciseGroupDatabaseController;
+import core.FreeExercise;
+import core.FreeExerciseDatabaseController;
+import core.IncludesDatabaseController;
+import core.Machine;
+import core.MachineDatabaseController;
+import core.MachineExercise;
+import core.MachineExerciseDatabaseController;
+import core.ResultSetConnection;
+import core.WorkoutDatabaseController;
 import data.DataLoader;
 import net.efabrika.util.DBTablePrinter;
 
@@ -36,6 +53,7 @@ public class UserInterface {
 		DataLoader.load();
 
 		while(!quit) {
+			System.out.println();
 			System.out.println("1: Register machine\n"
 							+ "2: Register exercise\n"
 							+ "3: Register workout\n"
@@ -59,7 +77,6 @@ public class UserInterface {
 			case 5: viewResultLog(); break;
 			case 6: registerExerciseGroup(); break;
 			case 7: viewWorkoutOnMachine(); break;
-			case 9: viewMachineExercises(); break;
 			case 8: quit = true; break;
 			default: System.out.println("Number must be 1-8"); continue;
 			}
@@ -67,16 +84,6 @@ public class UserInterface {
 		keyboard.close();
 	}
 
-	private static void viewMachineExercises() {
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-			DBTablePrinter.printTable(conn, "machine_exercise");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Registers ExerciseGroup
@@ -88,10 +95,12 @@ public class UserInterface {
 		System.out.println("Exercise group name: ");
 		String name = null;
 
-		try {
-			name = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be text!");
+		while (name == null) {
+			try {
+				name = keyboard.nextLine();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be text!");
+			}	
 		}
 
 		ExerciseGroup eg = new ExerciseGroup(name);
@@ -117,10 +126,14 @@ public class UserInterface {
 		System.out.println("How many workouts do you want to see?\n");
 		int input = 0;
 
-		try {
-			input = keyboard.nextInt();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
+		while (input == 0) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a number!");
+			} finally {
+				keyboard.nextLine();
+			}
 		}
 
 		Connection conn;
@@ -182,9 +195,10 @@ public class UserInterface {
 
 		try {
 			input = keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a character!");
-		}
+
+		} catch (InputMismatchException ignore) {
+			// ignores since Y is default
+		} 
 
 		if (!input.toLowerCase().equals("n")) {
 			// link Exercise to an ExerciseGroup
@@ -199,11 +213,16 @@ public class UserInterface {
 			System.out.println("Select the ID of the ExerciseGroup to register new Exercise to: ");
 			int id = 0;
 
-			try {
-				id = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
+			while (id < 1) {
+				try {
+					id = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
 			registerExercise(id);
 			return;
 		}
@@ -218,12 +237,16 @@ public class UserInterface {
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
 
-		try {
-			input = keyboard.nextInt();
-			keyboard.nextLine();
-		} catch (InputMismatchException e) {
-			System.err.println("Input must be a number!");
+		while (input == 0) {
+			try {
+				input = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be 1 or 2!");
+			} finally {
+				keyboard.nextLine();
+      }
 		}
+		
 
 		System.out.println("Name of exercise: ");
 		String name;
@@ -254,17 +277,40 @@ public class UserInterface {
 			int machineID = 0;
 			int sets = 0;
 			int kilograms = 0;
-
-			try {
-				System.out.println("MachineID: ");
-				machineID = keyboard.nextInt();
-				System.out.println("Sets: ");
-				sets = keyboard.nextInt();
-				System.out.println("Kilograms: ");
-				kilograms = keyboard.nextInt();
-			} catch (InputMismatchException e) {
-				System.err.println("Input must be a number!");
+			
+			System.out.println("MachineID: ");
+			while (machineID == 0) {
+				try {
+					machineID = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
 			}
+			
+			System.out.println("Sets: ");
+			while (sets == 0) {
+				try {
+					sets = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a number between 1 and 10!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+			
+			System.out.println("Kilograms: ");
+			while (kilograms == 0) {
+			try {
+					kilograms = keyboard.nextInt();
+				} catch (InputMismatchException e) {
+					System.err.println("Input must be a positive number!");
+				} finally {
+					keyboard.nextLine();
+				}
+			}
+
 			MachineDatabaseController mdc = new MachineDatabaseController();
 			Machine machine = mdc.retrieve(machineID);
 			MachineExerciseDatabaseController medc = new MachineExerciseDatabaseController();
@@ -284,12 +330,79 @@ public class UserInterface {
 	}
 
 	/**
-	 * For every exercise, retrieve a result log for a given time interval
+	 * For some exercise, retrieve a result log for a given time interval
 	 * where the end-points of the interval is specified by the user
 	 */
 	private static void viewResultLog() {
-		// TODO Auto-generated method stub
+		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
+		Scanner keyboard = new Scanner(System.in);
 
+		System.out.println("----VIEW RESULT LOG----");
+
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+			DBTablePrinter.printTable(conn, "exercise", 9999, 120);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Which exercise do you want to view log of: ");
+		int id = 0;
+		
+		while (id == 0) {
+			try {
+				id = keyboard.nextInt();
+			} catch (InputMismatchException e) {
+				System.err.println("Input must be a number!");
+			} finally {
+				keyboard.nextLine();
+			}
+		}
+		
+		System.out.println("Start point of interval (format: yyyy-mm-dd hh:mm:ss)");
+		String timestamp = "";
+		Date start = null;
+		boolean flag = true;
+
+		while (flag) {
+			try {
+				timestamp = keyboard.nextLine();
+				Calendar c = Calendar.getInstance();
+				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
+			    start = new Date(c.getTimeInMillis());
+				flag = false;
+			} catch (ParseException e) {
+				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss");
+				flag = true;
+			}
+		}
+
+		System.out.println("End point of interval (format: yyyy-MM-dd HH:mm:ss)");
+		timestamp = "";
+		Date end = null;
+		flag = true;
+		while (flag) {
+			try {
+				timestamp = keyboard.nextLine();
+				Calendar c = Calendar.getInstance();
+				c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp));
+				end = new Date(c.getTimeInMillis());
+				flag = false;
+			} catch (ParseException e) {
+				System.err.println("Illegal format! Must be (yyyy-MM-dd HH:mm:ss)");
+				flag = true;
+			}
+		}
+
+		ResultSetConnection rsConn
+			= wdc.retrieveWorkoutBasedOnExercieAndTime(id, start, end);
+		DBTablePrinter.printResultSet(rsConn.getSet());
+		try {
+			rsConn.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

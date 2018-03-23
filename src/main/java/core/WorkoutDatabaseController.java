@@ -3,11 +3,11 @@ package core;
 import net.efabrika.util.DBTablePrinter;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.lang.Math;
 
 public class WorkoutDatabaseController implements DatabaseCRUD {
@@ -51,7 +51,7 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 
    public ResultSet getNWorkouts(int n) { 
 	   String sql = "SELECT * "
-			   	  + "FROM workout LIMIT ?";
+					 + "FROM workout LIMIT ?";
 	   try {
 		   Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 		   statement = connection.prepareStatement(sql);
@@ -64,6 +64,31 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 		   e.printStackTrace();
 	   }
 	   return null;
+   }
+   
+    public ResultSetConnection retrieveWorkoutBasedOnExercieAndTime
+   									(int exerciseID, Date start, Date end) {
+		String sql = "SELECT ed.duration, w.form, w.performance, w.notes "
+				   + "FROM workout as w "
+				   + "JOIN exercise_done as ed on (ed.workout_id = w.workout_id) "
+				   + "JOIN exercise as e on (e.exercise_id = ed.exercise_id) "
+				   + "WHERE (e.exercise_id=?) "
+				   + "and (w.timestamp BETWEEN ? AND ?)";
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(sql);
+			statement.setInt(1, exerciseID);
+			statement.setDate(2, start);
+			statement.setDate(3, end);
+			ResultSet rs = statement.executeQuery();
+			
+			ResultSetConnection rsConn = new ResultSetConnection(rs, connection);
+			return rsConn;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
    }
     
 	public Workout retrieve(int id) {
