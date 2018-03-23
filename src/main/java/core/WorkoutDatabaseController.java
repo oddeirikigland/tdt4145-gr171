@@ -159,7 +159,7 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
         }
 	}
 
-    public void retrieveMachineByID(int id) {
+    public ResultSetConnection retrieveWorkoutBasedOnMachineID(int machineID) {
         String sql = "SELECT * "
                 + "FROM workout "
                 + "WHERE workout_id IN " +
@@ -170,13 +170,15 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
+            statement.setInt(1, machineID);
             ResultSet rs = statement.executeQuery();
-            DBTablePrinter.printResultSet(rs, 120);
-            connection.close();
+
+            ResultSetConnection rsConn = new ResultSetConnection(rs, connection);
+            return rsConn;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 	
 	private Object isWorkout(Object obj) {
@@ -186,5 +188,4 @@ public class WorkoutDatabaseController implements DatabaseCRUD {
 			throw new IllegalArgumentException("Object must be a Workout");
 		}
 	}
-
 }

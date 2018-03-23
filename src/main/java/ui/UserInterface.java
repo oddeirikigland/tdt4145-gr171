@@ -1,9 +1,6 @@
 package ui;
 
 import java.io.IOException;
-import java.sql.*;
-import javax.sound.midi.Soundbank;
-import core.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -160,7 +157,7 @@ public class UserInterface {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-			DBTablePrinter.printTable(conn, "machine", 100, 120);
+			DBTablePrinter.printTable(conn, "machine", 9999, 120);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -168,18 +165,28 @@ public class UserInterface {
 		// Ask user to choose machine ID
 		Scanner keyboard = new Scanner(System.in);
 		System.out.println("Choose machine ID: ");
-		String input = "";
+		int machineID = 0;
 
 		// Print workouts on the chosen machine
-		while (input.equals("")) {
+		while (machineID == 0) {
 			try {
-				input = keyboard.nextLine();
-				wdc.retrieveMachineByID(Integer.parseInt(input));
-			} catch (NumberFormatException e) {
-				System.err.println("Input must be a number!");
-				input = "";
-			}
+                machineID = keyboard.nextInt();
+                wdc.retrieveWorkoutBasedOnMachineID(machineID);
+            } catch (InputMismatchException e) {
+                System.err.println("Input must be a number!");
+            } finally {
+			    keyboard.nextLine();
+            }
 		}
+        ResultSetConnection rsConn
+                = wdc.retrieveWorkoutBasedOnMachineID(machineID);
+        DBTablePrinter.printResultSet(rsConn.getSet());
+        try {
+            rsConn.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 	}
 
 	/**
