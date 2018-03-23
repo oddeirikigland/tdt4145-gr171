@@ -4,12 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 
-import controllers.ExerciseDoneDatabaseController;
-import controllers.ExerciseGroupDatabaseController;
-import controllers.FreeExerciseDatabaseController;
-import controllers.MachineDatabaseController;
-import controllers.MachineExerciseDatabaseController;
-import controllers.WorkoutDatabaseController;
+import controllers.*;
 import core.ExerciseDone;
 import core.ExerciseGroup;
 import core.FreeExercise;
@@ -32,13 +27,16 @@ public class DataLoader {
 		FreeExerciseDatabaseController fedc = new FreeExerciseDatabaseController();
 		WorkoutDatabaseController wdc = new WorkoutDatabaseController();
 		ExerciseDoneDatabaseController eddc = new ExerciseDoneDatabaseController();
+		IncludesDatabaseController idc = new IncludesDatabaseController();
 
 		FreeExercise freeExercise = new FreeExercise("Some name", "Some desc");
 		freeExercise = new FreeExercise(fedc.create(freeExercise), freeExercise.getName(), freeExercise.getDescription());
 		Workout workout = wdc.retrieve(1);
 		ExerciseDone exerciseDone = new ExerciseDone(3600, workout, freeExercise);
+
 		try {
 			eddc.create(exerciseDone);
+			idc.create(1, freeExercise);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
