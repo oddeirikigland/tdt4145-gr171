@@ -1,8 +1,10 @@
-package core;
+package controllers;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+
+import core.Exercise;
 
 public class IncludesDatabaseController {
 	

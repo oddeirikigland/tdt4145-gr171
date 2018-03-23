@@ -4,15 +4,31 @@ import java.io.IOException;
 
 import java.sql.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import controllers.ExerciseGroupDatabaseController;
+import controllers.FreeExerciseDatabaseController;
+import controllers.IncludesDatabaseController;
+import controllers.MachineDatabaseController;
+import controllers.MachineExerciseDatabaseController;
+import controllers.WorkoutDatabaseController;
+
 import core.*;
 
 import data.DataLoader;
+import data.DatabaseHandler;
+
 import net.efabrika.util.DBTablePrinter;
 
 public class UserInterface {
@@ -29,15 +45,18 @@ public class UserInterface {
 		Scanner keyboard = new Scanner(System.in);
 		boolean quit = false;
 
-		try {
-			DatabaseHandler.database(true);
-			DatabaseHandler.database(false);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		String path = "database.db";
+		Path dbPath = Paths.get(path);
+
+		if (! Files.exists(dbPath)) {
+			try {
+				DatabaseHandler.database(false);
+				DataLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
-		DataLoader.load();
 
 		while(!quit) {
 			System.out.println();
@@ -390,7 +409,6 @@ public class UserInterface {
 			// ignores since Y is default
 		} 
 
-
 		if (!input.toLowerCase().equals("n")) {
 			// link Exercise to an ExerciseGroup
 			Connection conn;
@@ -427,7 +445,6 @@ public class UserInterface {
 
 		System.out.println("Do you want to register a (1) FreeExercise or a  (2) MachineExercise? ");
 		int input = 0;
-
 
 		while (input == 0) {
 			try {
