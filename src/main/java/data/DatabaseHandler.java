@@ -1,8 +1,6 @@
 package data;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,8 +17,8 @@ public class DatabaseHandler {
 		
         String url = "jdbc:sqlite:database.db";
     	
-        String create = "src/main/resources/database.sql";
-        String wipe = "src/main/resources/wipe.sql";
+        String create = "/database.sql";
+        String wipe = "/wipe.sql";
         String path;
 
         if (flag) {
@@ -29,10 +27,11 @@ public class DatabaseHandler {
         	path = create;
         }
 
-        BufferedReader in = new BufferedReader(new FileReader(path));
+        InputStream in  = DatabaseHandler.class.getResourceAsStream(path);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String str;
         StringBuffer sql = new StringBuffer();
-        while ((str = in.readLine()) != null) {
+        while ((str = reader.readLine()) != null) {
         		sql.append(str + "\n ");
         }
         in.close();
