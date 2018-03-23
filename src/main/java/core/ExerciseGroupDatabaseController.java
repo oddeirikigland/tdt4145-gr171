@@ -44,6 +44,26 @@ public class ExerciseGroupDatabaseController {
 		return -1;
 	}
 	
+	public ResultSetConnection retrieveExercises(int id) {
+		String sql = "SELECT e.name "
+					+ "FROM exercise as e "
+					+ "JOIN includes as i on (i.exercise_id = e.exercise_id) "
+					+ "JOIN exercise_group as eg on (eg.exercise_group_id = i.exercise_group_id) "
+					+ "WHERE i.exercise_group_id=?";
+		
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+			statement = connection.prepareStatement(sql);
+			statement.setInt(1, id);
+			ResultSet rs = statement.executeQuery();
+			return new ResultSetConnection(rs, connection);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
     private Object isExerciseGroup(Object obj) {
         if (obj instanceof ExerciseGroup) {
             return obj;
