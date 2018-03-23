@@ -10,19 +10,20 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import core.DatabaseHandler;
+
+import controllers.ExerciseGroupDatabaseController;
+import controllers.FreeExerciseDatabaseController;
+import controllers.IncludesDatabaseController;
+import controllers.MachineDatabaseController;
+import controllers.MachineExerciseDatabaseController;
+import controllers.WorkoutDatabaseController;
 import core.ExerciseGroup;
-import core.ExerciseGroupDatabaseController;
 import core.FreeExercise;
-import core.FreeExerciseDatabaseController;
-import core.IncludesDatabaseController;
 import core.Machine;
-import core.MachineDatabaseController;
 import core.MachineExercise;
-import core.MachineExerciseDatabaseController;
 import core.ResultSetConnection;
-import core.WorkoutDatabaseController;
 import data.DataLoader;
+import data.DatabaseHandler;
 import net.efabrika.util.DBTablePrinter;
 
 public class UserInterface {

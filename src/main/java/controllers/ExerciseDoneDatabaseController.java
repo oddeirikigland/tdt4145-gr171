@@ -1,9 +1,11 @@
-package core;
+package controllers;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import core.ExerciseDone;
 
 public class ExerciseDoneDatabaseController {
 	
